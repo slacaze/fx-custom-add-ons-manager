@@ -14,6 +14,17 @@ classdef tSandboxConfig < fx.mcam.test.WithCleanWorkingDirectory
             this.verifyEqual( sbConfig.SourceCodeFolder, this.SourceCodeFolder);
         end
         
+        function testWrite( this )
+            sbConfig = fx.mcam.SandboxConfig();
+            sbConfig.Name = this.Name;
+            sbConfig.SourceCodeFolder = this.SourceCodeFolder;
+            sbConfig.toFile( 'actual.json' );
+            this.verifyEqual( exist( 'actual.json', 'file' ), 2 );
+            config = jsondecode( fileread( 'actual.json' ) );
+            this.verifyEqual( config.Name, this.Name );
+            this.verifyEqual( config.SourceCodeFolder, this.SourceCodeFolder );
+        end
+        
     end
     
     methods( Access = private )

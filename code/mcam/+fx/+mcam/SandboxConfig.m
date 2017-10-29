@@ -1,6 +1,6 @@
 classdef SandboxConfig
     
-    properties( GetAccess = public, SetAccess = private )
+    properties( GetAccess = public, SetAccess = public )
         Name(1,:) char {fx.mcam.util.validFileName} = char.empty
         SourceCodeFolder(1,:) char {fx.mcam.util.validFileName} = char.empty
     end
