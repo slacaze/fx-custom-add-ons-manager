@@ -1,7 +1,7 @@
 classdef SandboxConfig
     
     properties( GetAccess = public, SetAccess = public )
-        Name(1,:) char {fx.mcam.util.mustBeValidFileName} = char.empty
+        Name(1,:) char = char.empty
         ParentPackage(1,:) char {fx.mcam.util.mustBeValidPackageName} = char.empty
         ShortName(1,:) char {fx.mcam.util.mustBeValidFileName} = char.empty
         TestFolder(1,:) char {fx.mcam.util.mustBeValidFileName} = char.empty
@@ -56,20 +56,31 @@ classdef SandboxConfig
     methods( Access = private )
         
         function config = serialize( this )
-            propertyNames = this.getConfigProperties();
             config = struct();
-            for propertyIndex = 1:numel( propertyNames )
-                thisProperty = propertyNames{propertyIndex};
-                config.(thisProperty) = this.(thisProperty);
-            end
+            % AddOn info
+            config.name = this.Name;
+            config.parent_package = this.ParentPackage;
+            config.short_name = this.ShortName;
+            % Test config
+            config.test = struct();
+            config.test.root = this.TestFolder;
         end
         
         function this = deserialize( this, config )
-            propertyNames = this.getConfigProperties();
-            for propertyIndex = 1:numel( propertyNames )
-                thisProperty = propertyNames{propertyIndex};
-                if isfield( config, thisProperty )
-                    this.(thisProperty) = config.(thisProperty);
+            % AddOn info
+            if isfield( config, 'name' )
+                this.Name = config.name;
+            end
+            if isfield( config, 'parent_package' )
+                this.ParentPackage = config.parent_package;
+            end
+            if isfield( config, 'short_name' )
+                this.ShortName = config.short_name;
+            end
+            % Test config
+            if isfield( config, 'test' )
+                if isfield( config.test, 'root' )
+                    this.TestFolder = config.test.root;
                 end
             end
         end
