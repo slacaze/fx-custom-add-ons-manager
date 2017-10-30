@@ -2,7 +2,9 @@ classdef SandboxConfig
     
     properties( GetAccess = public, SetAccess = public )
         Name(1,:) char {fx.mcam.util.validFileName} = char.empty
-        SourceCodeFolder(1,:) char {fx.mcam.util.validFileName} = char.empty
+        ParentPackage(1,:) char {fx.mcam.util.validFileName} = char.empty
+        ShortName(1,:) char {fx.mcam.util.validFileName} = char.empty
+        TestFolder(1,:) char {fx.mcam.util.validFileName} = char.empty
     end
     
     methods( Access = public )

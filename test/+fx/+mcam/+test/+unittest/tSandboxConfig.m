@@ -2,7 +2,9 @@ classdef tSandboxConfig < fx.mcam.test.WithCleanWorkingDirectory
     
     properties( GetAccess = private, Constant )
         Name(1,:) char = 'testAddOn'
-        SourceCodeFolder(1,:) char = 'C:\somewhere'
+        ShortName(1,:) char = 'somewhere'
+        TestFolder(1,:) char = 'C:\elsewhere'
+        ParentPackage(1,:) char = 'fx'
     end
     
     methods( Test )
@@ -11,18 +13,24 @@ classdef tSandboxConfig < fx.mcam.test.WithCleanWorkingDirectory
             sampleConfig = this.makeSampleConfig();
             sbConfig = fx.mcam.SandboxConfig.fromFile( sampleConfig );
             this.verifyEqual( sbConfig.Name, this.Name );
-            this.verifyEqual( sbConfig.SourceCodeFolder, this.SourceCodeFolder);
+            this.verifyEqual( sbConfig.ShortName, this.ShortName);
+            this.verifyEqual( sbConfig.TestFolder, this.TestFolder);
+            this.verifyEqual( sbConfig.ParentPackage, this.ParentPackage);
         end
         
         function testWrite( this )
             sbConfig = fx.mcam.SandboxConfig();
             sbConfig.Name = this.Name;
-            sbConfig.SourceCodeFolder = this.SourceCodeFolder;
+            sbConfig.ShortName = this.ShortName;
+            sbConfig.TestFolder = this.TestFolder;
+            sbConfig.ParentPackage = this.ParentPackage;
             sbConfig.toFile( 'actual.json' );
             this.verifyEqual( exist( 'actual.json', 'file' ), 2 );
             config = jsondecode( fileread( 'actual.json' ) );
             this.verifyEqual( config.Name, this.Name );
-            this.verifyEqual( config.SourceCodeFolder, this.SourceCodeFolder );
+            this.verifyEqual( config.ShortName, this.ShortName );
+            this.verifyEqual( config.TestFolder, this.TestFolder );
+            this.verifyEqual( config.ParentPackage, this.ParentPackage );
         end
         
     end
@@ -33,7 +41,9 @@ classdef tSandboxConfig < fx.mcam.test.WithCleanWorkingDirectory
             filePath = fullfile( this.Root, 'sample.json' );
             config = struct(...
                 'Name', {this.Name},...
-                'SourceCodeFolder', {this.SourceCodeFolder} );
+                'ShortName', {this.ShortName},...
+                'TestFolder', {this.TestFolder},...
+                'ParentPackage', {this.ParentPackage} );
             file = fopen( filePath, 'w' );
             closeFile = onCleanup( @() fclose( file ) );
             fprintf( file, '%s',...
