@@ -1,4 +1,4 @@
-classdef tAliases < fx.mcam.test.WithCleanWorkingDirectory
+classdef tAliases < fx.mcam.test.WithSampleSandbox
     
     methods( Test )
         

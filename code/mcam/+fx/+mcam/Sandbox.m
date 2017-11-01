@@ -62,6 +62,8 @@ classdef Sandbox < handle
         function createStub( this, varargin )
             % Parse Inputs
             parser = inputParser();
+            parser.addParameter( 'Name', 'My AddOn Name',...
+                @(x) validateattributes( x, {'char'}, {'scalartext'} ) );
             parser.addParameter( 'ShortName', 'myaddon',...
                 @(x) validateattributes( x, {'char'}, {'scalartext'} ) );
             parser.addParameter( 'ParentPackage', 'fx',...
@@ -74,6 +76,9 @@ classdef Sandbox < handle
             % Grab config if exist
             if exist( this.ConfigFile, 'file' )
                 this.Configuration = fx.mcam.SandboxConfig.fromFile( this.ConfigFile );
+                if ~any( strcmp( 'Name', usingDefaults ) ) && ~isempty( this.Configuration.Name )
+                    inputs.Name = this.Configuration.Name;
+                end
                 if ~any( strcmp( 'ShortName', usingDefaults ) ) && ~isempty( this.Configuration.ShortName )
                     inputs.ShortName = this.Configuration.ShortName;
                 end
@@ -121,6 +126,15 @@ classdef Sandbox < handle
             this.Configuration.ShortName = inputs.ShortName;
             this.Configuration.ParentPackage = inputs.ParentPackage;
             this.Configuration.TestFolder = inputs.TestFolder;
+            if ~isempty( this.Configuration.ParentPackage )
+                testPackage = this.Configuration.ParentPackage;
+            else
+                testPackage = char.empty;
+            end
+            testPackage = sprintf( '%s.%s.test', testPackage, this.Configuration.ShortName );
+            this.Configuration.TestPackages(end+1,:) = {'all', testPackage};
+            testPackage = sprintf( '%s.unittest', testPackage );
+            this.Configuration.TestPackages(end+1,:) = {'unittest', testPackage};
             this.Configuration.toFile( this.ConfigFile );
         end
         
@@ -134,6 +148,29 @@ classdef Sandbox < handle
             this.refreshConfiguration();
             rmpath( this.TestFolder )
             rmpath( this.SourceCodeFolder )
+        end
+        
+        function testResults = test( this, suiteName )
+            this.refreshConfiguration();
+            if nargin < 2
+                suiteName = '';
+            end
+            if isempty( this.Configuration.TestPackages )
+                testResults = matlab.unittest.TestResult.empty;
+                return;
+            end
+            if isempty( suiteName )
+                testIndex = 1;
+            else
+                testIndex = find( strcmp( suiteName, this.Configuration.TestPackages(:,1) ), 1, 'first' );
+            end
+            if isempty( testIndex )
+                testResults = matlab.unittest.TestResult.empty;
+                return;
+            else
+                testPackage = this.Configuration.TestPackages{testIndex,2};
+            end
+            testResults = runtests( testPackage, 'IncludeSubpackages', true );
         end
         
     end

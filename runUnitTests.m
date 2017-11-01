@@ -1,4 +1,4 @@
-function runUnitTests( mode )
+function testResults = runUnitTests( mode )
     if nargin < 1
         mode = 'fast';
     end

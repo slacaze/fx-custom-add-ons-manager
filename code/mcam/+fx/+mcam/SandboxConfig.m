@@ -5,6 +5,7 @@ classdef SandboxConfig
         ParentPackage(1,:) char {fx.mcam.util.mustBeValidPackageName} = char.empty
         ShortName(1,:) char {fx.mcam.util.mustBeValidFileName} = char.empty
         TestFolder(1,:) char {fx.mcam.util.mustBeValidFileName} = char.empty
+        TestPackages(:,2) cell {fx.mcam.util.mustBeValidPackageName} = cell.empty
     end
     
     methods( Access = public )
@@ -64,6 +65,11 @@ classdef SandboxConfig
             % Test config
             config.test = struct();
             config.test.root = this.TestFolder;
+            config.test.suites = struct();
+            for testIndex = 1:size( this.TestPackages, 1 )
+                config.test.suites.(this.TestPackages{testIndex,1}) =...
+                    this.TestPackages{testIndex,2};
+            end
         end
         
         function this = deserialize( this, config )
@@ -81,6 +87,15 @@ classdef SandboxConfig
             if isfield( config, 'test' )
                 if isfield( config.test, 'root' )
                     this.TestFolder = config.test.root;
+                end
+                if isfield( config.test, 'suites' )
+                    suiteNames = fieldnames( config.test.suites );
+                    for suiteIndex = 1:numel( suiteNames )
+                        this.TestPackages(end+1,:) = {...
+                            suiteNames{suiteIndex},...
+                            config.test.suites.(suiteNames{suiteIndex}),...
+                            };
+                    end
                 end
             end
         end

@@ -2,7 +2,7 @@ function mksandbox( varargin )
     parser = inputParser;
     parser.KeepUnmatched = true;
     parser.addOptional( 'Path', pwd,...
-        @fx.mcam.util.mustBeValidFileName );
+        @fx.mcam.util.mustBeValidPath );
     parser.parse( varargin{:} );
     inputs = parser.Results;
     unmatched = parser.Unmatched;
