@@ -4,9 +4,11 @@
     <param.authnamewatermark>Sylvain Lacaze</param.authnamewatermark>
     <param.email />
     <param.company />
-    <param.summary />
-    <param.description />
-    <param.screenshot />
+    <param.summary>Create, develop, and manage MATLAB Add-Ons.</param.summary>
+    <param.description>For more information, see repo on GITHUB:
+
+https://github.com/slacaze/matlab-custom-add-ons-manager</param.description>
+    <param.screenshot>${PROJECT_ROOT}\logo.png</param.screenshot>
     <param.version>1.0.0</param.version>
     <param.output>${PROJECT_ROOT}\MATLAB Custom Add-Ons Manager.mltbx</param.output>
     <param.products.name />
@@ -28,9 +30,6 @@
     <unset>
       <param.email />
       <param.company />
-      <param.summary />
-      <param.description />
-      <param.screenshot />
       <param.output />
       <param.products.name />
       <param.products.id />
@@ -48,7 +47,9 @@
     <fileset.rootdir>
       <file>${PROJECT_ROOT}\code</file>
     </fileset.rootdir>
-    <fileset.rootfiles />
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}\code\mcam</file>
+    </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
     <fileset.package />
