@@ -26,6 +26,7 @@ classdef Sandbox < handle
     properties( GetAccess = public, SetAccess = private, Dependent, Hidden )
         ConfigFile(1,:) char
         PrjFile(1,:) char
+        ContentsFile(1,:) char
         SourceCodeFolder(1,:) char
         TestFolder(1,:) char
     end
@@ -102,6 +103,12 @@ classdef Sandbox < handle
             value = fullfile(...
                 this.Root,...
                 sprintf( '%s.prj', this.Configuration.ShortName ) );
+        end
+        
+        function value = get.ContentsFile( this )
+            value = fullfile(...
+                this.SourceCodeFolder,...
+                'Contents.m' );
         end
         
         function value = get.SourceCodeFolder( this )
@@ -256,6 +263,28 @@ classdef Sandbox < handle
             testResults = runtests( testPackage, 'IncludeSubpackages', true );
         end
         
+        function package( this )
+            this.verifyConfigFileExist();
+            this.verifyPrjFileExist();
+            if ~any( strcmp( this.SourceCodeFolder, strsplit( path, ';' ) ) )
+                addpath( this.SourceCodeFolder, '-end' );
+                removeSourceCodeFolderFromPath = onCleanup(...
+                    @() rmpath( this.SourceCodeFolder ) );
+            end
+            if any( strcmp( this.TestFolder, strsplit( path, ';' ) ) )
+                rmpath( this.TestFolder );
+                reAddTestFolderToPath = onCleanup(...
+                    @() addpath( this.TestFolder, '-end' ) );
+            end
+            this.prepareForPackaging();
+            outputFile = fullfile(...
+                this.Root,...
+                sprintf( '%s v%s.mltbx',...
+                this.Name,...
+                this.Version ) );
+            matlab.addons.toolbox.packageToolbox( this.PrjFile, outputFile );
+        end
+        
     end
     
     methods( Access = private )
@@ -265,6 +294,14 @@ classdef Sandbox < handle
                 'MCAM:MissingConfigFile',...
                 'Missing "mcam.json" at localtion "%s".',...
                 this.ConfigFile );
+        end
+        
+        function verifyPrjFileExist( this )
+            assert( exist( this.PrjFile, 'file' ) == 2,...
+                'MCAM:MissingPrjFile',...
+                'Missing "%s.prj" at localtion "%s".',...
+                this.Configuration.ShortName,...
+                this.PrjFile );
         end
         
         function validateRootIsEmpty( this )
@@ -281,6 +318,31 @@ classdef Sandbox < handle
                 'MCAM:RootNotEmpty',...
                 'The path "%s" is not empty.',...
                 this.Root );
+        end
+        
+        function prepareForPackaging( this )
+            versionLine = sprintf( "%% Version %s (R%s) %s",...
+                this.Version,...
+                version( '-release' ),...
+                datetime( 'now', 'Format', 'dd-MMM-yyyy' ) );
+            if exist( this.ContentsFile, 'file' ) ~= 2
+                makecontentsfile( this.SourceCodeFolder );
+                contents = splitlines( string( fileread( this.ContentsFile ) ) );
+                contents = [...
+                    contents(1);...
+                    versionLine;
+                    contents(2:end);...
+                    ];
+            else
+                fixcontents( this.ContentsFile, 'all' );
+                contents = splitlines( string( fileread( this.ContentsFile ) ) );
+                contents(2) = versionLine;
+            end
+            emptyLines = contents == "";
+            contents(emptyLines) = [];
+            file = fopen( this.ContentsFile, 'w' );
+            closeFile = onCleanup( @() fclose( file ) );
+            fprintf( file, '%s\n', contents );
         end
         
     end

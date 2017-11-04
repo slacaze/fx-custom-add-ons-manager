@@ -40,6 +40,12 @@ classdef tAliases < fx.mcam.test.WithSampleSandbox
             this.verifyEqual( oldPath, newPath );
         end
         
+        function testPackageSandbox( this )
+            this.verifyEqual( exist( sprintf( '%s v1.0.0.mltbx', this.Name ), 'file' ), 0 );
+            packagesandbox();
+            this.verifyEqual( exist( sprintf( '%s v1.0.0.mltbx', this.Name ), 'file' ), 2 );
+        end
+        
     end
     
 end

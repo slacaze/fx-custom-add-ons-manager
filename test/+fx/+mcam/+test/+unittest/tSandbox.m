@@ -91,6 +91,13 @@ classdef tSandbox < fx.mcam.test.WithCleanWorkingDirectory
             this.verifyEqual( this.Sandbox.Guid, this.Sandbox.Prj.Guid );
         end
         
+        function testPackage( this )
+            this.verifyEqual( exist( sprintf( '%s v1.0.0.mltbx', this.Name ), 'file' ), 0 );
+            this.Sandbox.Name = this.Name;
+            this.Sandbox.package();
+            this.verifyEqual( exist( sprintf( '%s v1.0.0.mltbx', this.Name ), 'file' ), 2 );
+        end
+        
     end
     
     methods( Test, ParameterCombination = 'sequential' )
