@@ -1,8 +1,15 @@
 function mksandbox( varargin )
     parser = inputParser;
     parser.KeepUnmatched = true;
-    parser.addOptional( 'Path', pwd,...
-        @fx.mcam.util.mustBeValidPath );
+    if mod( nargin, 2 ) == 1
+        % Infer that the first argument is the path, only if odd number of
+        % input arguments
+        parser.addOptional( 'Path', pwd,...
+            @fx.mcam.util.mustBeValidPath );
+    else
+        parser.addParameter( 'Path', pwd,...
+            @fx.mcam.util.mustBeValidPath );
+    end
     parser.parse( varargin{:} );
     inputs = parser.Results;
     unmatched = parser.Unmatched;
