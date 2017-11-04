@@ -23,6 +23,8 @@ classdef tSandbox < fx.mcam.test.WithCleanWorkingDirectory
     methods( Test )
         
         function testSandboxCreation( this )
+            this.verifyEqual( exist( sprintf( 'mcam.json' ), 'file' ), 2 );
+            this.verifyEqual( exist( sprintf( 'myaddon.prj' ), 'file' ), 2 );
             this.verifyEqual( exist( 'code', 'dir' ), 7 );
             this.verifyEqual( exist( fullfile( 'code', 'myaddon' ), 'dir' ), 7 );
             this.verifyEqual( exist( fullfile( 'code', 'myaddon', '+fx' ), 'dir' ), 7 );
@@ -50,6 +52,12 @@ classdef tSandbox < fx.mcam.test.WithCleanWorkingDirectory
             this.Sandbox.removeFromPath();
             newPath = strsplit( path, ';' );
             this.verifyEqual( oldPath, newPath );
+        end
+        
+        function testSandboxCanDetectConfigAndPrjFile( this )
+            newSandbox = fx.mcam.Sandbox( this.Root );
+            this.verifyNotEmpty( newSandbox.Prj );
+            this.verifyNotEmpty( newSandbox.Configuration );
         end
         
     end

@@ -6,10 +6,12 @@ classdef Sandbox < handle
     
     properties( GetAccess = public, SetAccess = private )
         Configuration(1,1) fx.mcam.SandboxConfig = fx.mcam.SandboxConfig
+        Prj(1,:) fx.mcam.PrjFile {fx.mcam.util.mustBeEmptyOrScalar} = fx.mcam.PrjFile.empty
     end
     
     properties( GetAccess = public, SetAccess = private, Dependent )
         ConfigFile(1,:) char
+        PrjFile(1,:) char
         SourceCodeFolder(1,:) char
         TestFolder(1,:) char
     end
@@ -20,6 +22,12 @@ classdef Sandbox < handle
             value = fullfile(...
                 this.Root,...
                 'mcam.json' );
+        end
+        
+        function value = get.PrjFile( this )
+            value = fullfile(...
+                this.Root,...
+                sprintf( '%s.prj', this.Configuration.ShortName ) );
         end
         
         function value = get.SourceCodeFolder( this )
@@ -48,6 +56,7 @@ classdef Sandbox < handle
                 'The path "%s" does not exist.',...
                 root );
             this.Root = root;
+            this.attemptToInitialize();
         end
         
     end
@@ -136,6 +145,8 @@ classdef Sandbox < handle
             testPackage = sprintf( '%s.unittest', testPackage );
             this.Configuration.TestPackages(end+1,:) = {'unittest', testPackage};
             this.Configuration.toFile( this.ConfigFile );
+            % Place the Prj
+            this.Prj = fx.mcam.PrjFile( this.PrjFile );
         end
         
         function addToPath( this )
@@ -198,6 +209,15 @@ classdef Sandbox < handle
                 'MCAM:RootNotEmpty',...
                 'The path "%s" is not empty.',...
                 this.Root );
+        end
+        
+        function attemptToInitialize( this )
+            if exist( this.ConfigFile, 'file' ) == 2
+                this.Configuration = fx.mcam.SandboxConfig.fromFile( this.ConfigFile );
+                if exist( this.PrjFile, 'file' ) == 2
+                    this.Prj = fx.mcam.PrjFile( this.PrjFile );
+                end
+            end
         end
         
     end
