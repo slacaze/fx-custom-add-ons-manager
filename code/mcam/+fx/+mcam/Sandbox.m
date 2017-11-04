@@ -4,12 +4,16 @@ classdef Sandbox < handle
         Root char = char.empty
     end
     
-    properties( GetAccess = public, SetAccess = private )
-        Configuration(1,1) fx.mcam.SandboxConfig = fx.mcam.SandboxConfig
+    properties( GetAccess = public, SetAccess = public, Dependent )
+        Name(1,:) char
+    end
+    
+    properties( GetAccess = public, SetAccess = private, Hidden )
+        Configuration(1,:) fx.mcam.SandboxConfigurationFile {fx.mcam.util.mustBeEmptyOrScalar} = fx.mcam.SandboxConfigurationFile.empty
         Prj(1,:) fx.mcam.PrjFile {fx.mcam.util.mustBeEmptyOrScalar} = fx.mcam.PrjFile.empty
     end
     
-    properties( GetAccess = public, SetAccess = private, Dependent )
+    properties( GetAccess = public, SetAccess = private, Dependent, Hidden )
         ConfigFile(1,:) char
         PrjFile(1,:) char
         SourceCodeFolder(1,:) char
@@ -56,17 +60,17 @@ classdef Sandbox < handle
                 'The path "%s" does not exist.',...
                 root );
             this.Root = root;
-            this.attemptToInitialize();
+            if exist( this.ConfigFile, 'file' ) == 2
+                this.Configuration = fx.mcam.SandboxConfigurationFile( this.ConfigFile );
+                if exist( this.PrjFile, 'file' ) == 2
+                    this.Prj = fx.mcam.PrjFile( this.PrjFile );
+                end
+            end
         end
         
     end
     
     methods( Access = public )
-        
-        function refreshConfiguration( this )
-            this.ensureConfigFileExist();
-            this.Configuration = fx.mcam.SandboxConfig.fromFile( this.ConfigFile );
-        end
         
         function createStub( this, varargin )
             % Parse Inputs
@@ -85,9 +89,6 @@ classdef Sandbox < handle
             % Grab config if exist
             if exist( this.ConfigFile, 'file' )
                 this.Configuration = fx.mcam.SandboxConfig.fromFile( this.ConfigFile );
-                if ~any( strcmp( 'Name', usingDefaults ) ) && ~isempty( this.Configuration.Name )
-                    inputs.Name = this.Configuration.Name;
-                end
                 if ~any( strcmp( 'ShortName', usingDefaults ) ) && ~isempty( this.Configuration.ShortName )
                     inputs.ShortName = this.Configuration.ShortName;
                 end
@@ -132,6 +133,7 @@ classdef Sandbox < handle
             testPath = fullfile( testPath, '+unittest' );
             mkdir( testPath );
             % Place the config
+            this.Configuration = fx.mcam.SandboxConfigurationFile( this.ConfigFile );
             this.Configuration.ShortName = inputs.ShortName;
             this.Configuration.ParentPackage = inputs.ParentPackage;
             this.Configuration.TestFolder = inputs.TestFolder;
@@ -144,25 +146,25 @@ classdef Sandbox < handle
             this.Configuration.TestPackages(end+1,:) = {'all', testPackage};
             testPackage = sprintf( '%s.unittest', testPackage );
             this.Configuration.TestPackages(end+1,:) = {'unittest', testPackage};
-            this.Configuration.toFile( this.ConfigFile );
             % Place the Prj
             this.Prj = fx.mcam.PrjFile( this.PrjFile );
+            this.Prj.Name = inputs.Name;
         end
         
         function addToPath( this )
-            this.refreshConfiguration();
+            this.verifyConfigFileExist();
             addpath( this.TestFolder, '-end' )
             addpath( this.SourceCodeFolder, '-end' )
         end
         
         function removeFromPath( this )
-            this.refreshConfiguration();
+            this.verifyConfigFileExist();
             rmpath( this.TestFolder )
             rmpath( this.SourceCodeFolder )
         end
         
         function testResults = test( this, suiteName )
-            this.refreshConfiguration();
+            this.verifyConfigFileExist();
             if nargin < 2
                 suiteName = '';
             end
@@ -188,11 +190,11 @@ classdef Sandbox < handle
     
     methods( Access = private )
         
-        function ensureConfigFileExist( this )
-            if exist( this.ConfigFile, 'file' ) ~= 2
-                file = fopen( this.ConfigFile, 'w' );
-                closeFile = onCleanup( @() fclose( file ) );
-            end
+        function verifyConfigFileExist( this )
+            assert( exist( this.ConfigFile, 'file' ) == 2,...
+                'MCAM:MissingConfigFile',...
+                'Missing "mcam.json" at localtion "%s".',...
+                this.ConfigFile );
         end
         
         function validateRootIsEmpty( this )
@@ -209,15 +211,6 @@ classdef Sandbox < handle
                 'MCAM:RootNotEmpty',...
                 'The path "%s" is not empty.',...
                 this.Root );
-        end
-        
-        function attemptToInitialize( this )
-            if exist( this.ConfigFile, 'file' ) == 2
-                this.Configuration = fx.mcam.SandboxConfig.fromFile( this.ConfigFile );
-                if exist( this.PrjFile, 'file' ) == 2
-                    this.Prj = fx.mcam.PrjFile( this.PrjFile );
-                end
-            end
         end
         
     end

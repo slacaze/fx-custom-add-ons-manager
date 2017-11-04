@@ -1,4 +1,8 @@
-classdef PrjFile
+classdef PrjFile < fx.mcam.internal.File
+    
+    properties( GetAccess = protected, Constant )
+        ValidNames = '[a-zA-Z]*[.]prj'
+    end
     
     properties( GetAccess = public, SetAccess = public, Dependent )
         Name(1,:) char
@@ -12,10 +16,6 @@ classdef PrjFile
     
     properties( GetAccess = public, SetAccess = private, Dependent )
         Guid(1,:) char
-    end
-    
-    properties( GetAccess = public, SetAccess = immutable )
-        File char = char.empty
     end
     
     methods
@@ -105,28 +105,20 @@ classdef PrjFile
     methods( Access = public )
         
         function this = PrjFile( path )
-            fx.mcam.util.mustBeValidPath( path );
-            [~, ~, ext] = fileparts( path );
-            assert( strcmp( ext, '.prj' ),...
-                'MCAM:InvalidFile',...
-                'The file should be a PRJ one.' );
-            this.File = path;
-            if exist( this.File, 'file' ) ~= 2
-                this = this.createStub();
-            end
+            this@fx.mcam.internal.File( path );
         end
         
     end
     
-    methods( Access = private )
+    methods( Access = protected )
         
         function this = createStub( this )
             copyfile(...
                 fullfile( mcamroot, 'templates', 'prjfile.prj' ),...
-                this.File );
-            prjContent = fileread( this.File );
-            [parentFolder, fileName, ~] = fileparts( this.File );
-            prjContent = strrep( prjContent, '_PRJ_FULLPATH_MCAM_MARKER_', this.File );
+                this.FilePath );
+            prjContent = fileread( this.FilePath );
+            [parentFolder, fileName, ~] = fileparts( this.FilePath );
+            prjContent = strrep( prjContent, '_PRJ_FULLPATH_MCAM_MARKER_', this.FilePath );
             prjContent = strrep( prjContent, '_PRJ_PARENT_FOLDER_MCAM_MARKER_', parentFolder );
             prjContent = strrep( prjContent, '_PRJ_FILENAME_MCAM_MARKER_', fileName );
             this.updateFileContent( prjContent );
@@ -134,8 +126,12 @@ classdef PrjFile
             this.Version = '1.0.0';
         end
         
+    end
+    
+    methods( Access = private )
+        
         function value = findToken( this, token )
-            prjContent = fileread( this.File );
+            prjContent = fileread( this.FilePath );
             value = regexp( prjContent, sprintf( '<%s>(.*)</%s>', token, token ), 'once', 'tokens' );
             if isempty( value )
                 % The token is unset
@@ -146,7 +142,7 @@ classdef PrjFile
         end
         
         function updateToken( this, token, value )
-            prjContent = fileread( this.File );
+            prjContent = fileread( this.FilePath );
             setToken = regexp( prjContent, sprintf( '<%s>(.*)</%s>', token, token ), 'once', 'tokens' );
             if isempty( setToken )
                 % The token is unset
@@ -164,12 +160,6 @@ classdef PrjFile
                     sprintf( '<%s>%s</%s>', token, value, token ) );
             end
             this.updateFileContent( prjContent );
-        end
-        
-        function updateFileContent( this, newContent )
-            file = fopen( this.File, 'w' );
-            closeFile = onCleanup( @() fclose( file ) );
-            fprintf( file, '%s', newContent );
         end
         
     end

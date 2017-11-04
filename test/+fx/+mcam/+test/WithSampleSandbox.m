@@ -3,14 +3,14 @@ classdef WithSampleSandbox < fx.mcam.test.WithCleanWorkingDirectory
     properties( GetAccess = protected, Constant )
         Name(1,:) char = 'Sample Add On'
         ShortName(1,:) char = 'sample'
-        TestFolder(1,:) char = 'test'
+        TestFolder(1,:) char = 'tests'
         ParentPackages(1,:) cell = {'fx', 'submission'}
         ParentPackage(1,:) char = strjoin( fx.mcam.test.WithSampleSandbox.ParentPackages, '.' )
     end
     
     methods( TestMethodSetup )
         
-        function b_createSandbox( this )
+        function createSandbox( this )
             fx.mcam.command.mksandbox(...
                 this.Root,...
                 'Name', this.Name,...

@@ -3,45 +3,39 @@ classdef tAliases < fx.mcam.test.WithSampleSandbox
     methods( Test )
         
         function testMkSandbox( this )
-            folder = 'thisRoot';
-            mksandbox( folder,...
-                'ShortName', 'rockstar',...
-                'TestFolder', 'fancytests',...
-                'ParentPackage', 'super.tramp' );
-            this.verifyEqual( pwd, fullfile( this.Root, 'thisRoot' ) );
             this.verifyEqual( exist( 'code', 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'code', 'rockstar' ), 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'code', 'rockstar', '+super' ), 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'code', 'rockstar', '+super', '+tramp' ), 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'code', 'rockstar', '+super', '+tramp', '+rockstar' ), 'dir' ), 7 );
-            this.verifyEqual( exist( 'fancytests', 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'fancytests', '+super' ), 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'fancytests', '+super', '+tramp' ), 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'fancytests', '+super', '+tramp', '+rockstar' ), 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'fancytests', '+super', '+tramp', '+rockstar', '+test' ), 'dir' ), 7 );
-            this.verifyEqual( exist( fullfile( 'fancytests', '+super', '+tramp', '+rockstar', '+test', '+unittest' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'code', 'sample' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'code', 'sample', '+fx' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'code', 'sample', '+fx', '+submission' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'code', 'sample', '+fx', '+submission', '+sample' ), 'dir' ), 7 );
+            this.verifyEqual( exist( 'tests', 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'tests', '+fx' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'tests', '+fx', '+submission' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'tests', '+fx', '+submission', '+sample' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'tests', '+fx', '+submission', '+sample', '+test' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'tests', '+fx', '+submission', '+sample', '+test', '+unittest' ), 'dir' ), 7 );
             this.verifyEqual( exist( 'mcam.json', 'file' ), 2 );
-            this.verifyEqual( exist( fullfile( 'code', 'rockstar', 'rockstarroot.m' ), 'file' ), 2 );
-            this.verifyEqual( exist( fullfile( 'fancytests', 'rockstartestroot.m' ), 'file' ), 2 );
+            this.verifyEqual( exist( 'sample.prj', 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'code', 'sample', 'sampleroot.m' ), 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'code', 'sample', 'giveMeTwice.m' ), 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'code', 'sample', '+fx', '+submission', '+sample', 'splitSpaces.m' ), 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'code', 'sample', 'sampleroot.m' ), 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'tests', 'sampletestroot.m' ), 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'tests', '+fx', '+submission', '+sample', '+test', 'tgiveMeTwice.m' ), 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'tests', '+fx', '+submission', '+sample', '+test', '+unittest', 'tsplitSpaces.m' ), 'file' ), 2 );
         end
         
         function testAddAndRemoveSandbox( this )
-            folder = 'thisRoot';
-            mksandbox( folder,...
-                'ShortName', 'rockstar',...
-                'TestFolder', 'fancytests',...
-                'ParentPackage', 'super.tramp' );
-            cd( '..' );
             oldPath = strsplit( path, ';' );
-            addsandbox( folder );
+            addsandbox( this.Root );
             newPath = strsplit( path, ';' );
             addedPath = setdiff( newPath, oldPath );
             expectedPathAdded = {...
-                fullfile( this.Root, folder, 'code', 'rockstar' ),...
-                fullfile( this.Root, folder, 'fancytests' ),...
+                fullfile( this.Root, 'code', 'sample' ),...
+                fullfile( this.Root, 'tests' ),...
                 };
             this.verifyTrue( all( ismember( addedPath, expectedPathAdded ) ) );
-            rmsandbox( folder )
+            rmsandbox( this.Root )
             newPath = strsplit( path, ';' );
             this.verifyEqual( oldPath, newPath );
         end
