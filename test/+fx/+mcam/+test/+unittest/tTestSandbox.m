@@ -19,7 +19,7 @@ classdef tTestSandbox < fx.mcam.test.WithSampleSandbox
             [~, results] = evalc( 'testsandbox();' );
             this.verifyNumElements( results, 2 );
             this.verifyTrue( ~any( [results.Failed] ) );
-            [~, results] = evalc( 'testsandbox( this.Root, ''unittest'' );' );
+            [~, results] = evalc( 'testsandbox( ''unittest'' );' );
             rmsandbox();
             this.verifyNumElements( results, 1 );
             this.verifyTrue( ~any( [results.Failed] ) );

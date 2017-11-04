@@ -6,6 +6,16 @@ classdef Sandbox < handle
     
     properties( GetAccess = public, SetAccess = public, Dependent )
         Name(1,:) char
+        Author(1,:) char
+        Email(1,:) char
+        Company(1,:) char
+        Summary(1,:) char
+        Description(1,:) char
+        Version(1,:) char
+    end
+    
+    properties( GetAccess = public, SetAccess = private, Dependent )
+        Guid(1,:) char
     end
     
     properties( GetAccess = public, SetAccess = private, Hidden )
@@ -21,6 +31,66 @@ classdef Sandbox < handle
     end
     
     methods
+        
+        function value = get.Name( this )
+            value = this.Prj.Name;
+        end
+        
+        function set.Name( this, value )
+            this.Prj.Name = value;
+        end
+        
+        function value = get.Author( this )
+            value = this.Prj.Author;
+        end
+        
+        function set.Author( this, value )
+            this.Prj.Author = value;
+        end
+        
+        function value = get.Email( this )
+            value = this.Prj.Email;
+        end
+        
+        function set.Email( this, value )
+            this.Prj.Email = value;
+        end
+        
+        function value = get.Company( this )
+            value = this.Prj.Company;
+        end
+        
+        function set.Company( this, value )
+            this.Prj.Company = value;
+        end
+        
+        function value = get.Summary( this )
+            value = this.Prj.Summary;
+        end
+        
+        function set.Summary( this, value )
+            this.Prj.Summary = value;
+        end
+        
+        function value = get.Description( this )
+            value = this.Prj.Description;
+        end
+        
+        function set.Description( this, value )
+            this.Prj.Description = value;
+        end
+        
+        function value = get.Version( this )
+            value = this.Prj.Version;
+        end
+        
+        function set.Version( this, value )
+            this.Prj.Version = value;
+        end
+        
+        function value = get.Guid( this )
+            value = this.Prj.Guid;
+        end
         
         function value = get.ConfigFile( this )
             value = fullfile(...
