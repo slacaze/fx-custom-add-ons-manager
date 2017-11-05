@@ -301,15 +301,21 @@ classdef Sandbox < handle
             deleteFile = onCleanup( @() delete( tempFile ) );
             fx.mcam.util.flushEventQueue();
             tempToolbox = matlab.addons.toolbox.installToolbox( tempFile, true );
+            uninstallAddOn = onCleanup(...
+                @() matlab.addons.toolbox.uninstallToolbox( tempToolbox ) );
             fx.mcam.util.flushEventQueue();
             if any( strcmp( this.SourceCodeFolder, strsplit( path, ';' ) ) )
                 rmpath( this.SourceCodeFolder );
+                reAddSourceCodeFolderToPath = onCleanup(...
+                    @() addpath( this.SourceCodeFolder, '-end' ) );
                 reAddSourceCode = true;
             else
                 reAddSourceCode = false;
             end
             if ~any( strcmp( this.TestFolder, strsplit( path, ';' ) ) )
                 addpath( this.TestFolder, '-end' );
+                removeTestFolderFromPath = onCleanup(...
+                    @() rmpath( this.TestFolder ) );
                 removeTest = true;
             else
                 removeTest = false;
@@ -317,13 +323,13 @@ classdef Sandbox < handle
             fx.mcam.util.flushEventQueue();
             testResults = this.test( suiteName );
             if reAddSourceCode
-                addpath( this.SourceCodeFolder, '-end' );
+                delete( reAddSourceCodeFolderToPath );
             end
             if removeTest
-                rmpath( this.TestFolder );
+                delete( removeTestFolderFromPath );
             end
             fx.mcam.util.flushEventQueue();
-            matlab.addons.toolbox.uninstallToolbox( tempToolbox );
+            delete( uninstallAddOn );
             fx.mcam.util.flushEventQueue();
         end
         

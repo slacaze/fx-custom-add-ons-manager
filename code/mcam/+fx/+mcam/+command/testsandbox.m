@@ -9,11 +9,15 @@ function testResults = testsandbox( varargin )
     try
         sandbox = fx.mcam.Sandbox( inputs.Path );
         testResults = sandbox.test( inputs.Suite );
-    catch
-        % Try if the first argument was a suite
-        inputs.Suite = inputs.Path;
-        inputs.Path = pwd;
-        sandbox = fx.mcam.Sandbox( inputs.Path );
-        testResults = sandbox.test( inputs.Suite );
+    catch matlabException
+        if strcmp( matlabException.identifier, 'MCAM:InvalidRoot' )
+            % Try if the first argument was a suite
+            inputs.Suite = inputs.Path;
+            inputs.Path = pwd;
+            sandbox = fx.mcam.Sandbox( inputs.Path );
+            testResults = sandbox.test( inputs.Suite );
+        else
+            matlabException.rethrow();
+        end
     end
 end

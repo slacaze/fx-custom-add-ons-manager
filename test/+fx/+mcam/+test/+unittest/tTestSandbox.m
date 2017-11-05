@@ -1,4 +1,4 @@
-classdef tTestSandbox < fx.mcam.test.WithSampleSandbox
+classdef tTestSandbox < fx.mcam.test.WithFailingTest
     
     methods( Test )
         
@@ -62,21 +62,6 @@ classdef tTestSandbox < fx.mcam.test.WithSampleSandbox
         
         function testTestPacakgedAddonFlagsPackagingProblems( this )
             sandbox = fx.mcam.Sandbox( this.Root );
-            try %#ok<TRYNC>
-                sandbox.Configuration.TestPackages(end+1,:) = {'failing', 'fx.submission.sample.failingTestOncePackaged'};
-            end
-            copyfile(...
-                fullfile( mcamtestroot, 'Sample', 'prjfile.prj' ),...
-                fullfile( this.Root, 'code', this.ShortName, 'prjfile.prj' ) );
-            copyfile(...
-                fullfile( mcamtestroot, 'Sample', 'prjFileExist.m' ),...
-                fullfile( this.Root, 'code', this.ShortName, 'prjFileExist.m' ) );
-            packagePath = cellfun( @(str) sprintf( '+%s', str ), this.ParentPackages,...
-                'UniformOutput', false );
-            mkdir( fullfile( this.Root, this.TestFolder, packagePath{:}, sprintf( '+%s', this.ShortName ), '+failingTestOncePackaged' ) );
-            copyfile(...
-                fullfile( mcamtestroot, 'Sample', 'tprjFileExist.m' ),...
-                fullfile( this.Root, this.TestFolder, packagePath{:}, sprintf( '+%s', this.ShortName ), '+failingTestOncePackaged', 'tprjFileExist.m' ) );
             sandbox.addToPath();
             [~, results] = evalc( 'sandbox.test( ''failing'' );' );
             this.verifyNumElements( results, 1,...
@@ -89,6 +74,18 @@ classdef tTestSandbox < fx.mcam.test.WithSampleSandbox
             this.verifyTrue( all( [results.Failed] ),...
                 'All tests should be failing in packaged mode.' );
             sandbox.removeFromPath();
+        end
+        
+        function testTestFailuresDoesNotCauseFallback( this )
+            addsandbox();
+            this.verifyError( @() testsandbox( this.Root, 'bad' ), 'MATLAB:class:InvalidType' );
+            rmsandbox();
+        end
+        
+        function testTestFailuresDoesNotCauseFallbackOnAddOn( this )
+            addsandbox();
+            this.verifyError( @() testaddon( this.Root, 'bad' ), 'MATLAB:class:InvalidType' );
+            rmsandbox();
         end
         
     end
