@@ -33,6 +33,13 @@ classdef tSandboxConfigurationFile < fx.mcam.test.WithCleanWorkingDirectory
             this.verifyEqual( config.test.suites, struct( this.TestPackages{1,1}, {this.TestPackages{1,2}} ) );
         end
         
+        function testWritingDoesNotOverWriteOthers( this )
+            sampleConfig = this.makeSampleConfig();
+            sbConfig = fx.mcam.SandboxConfigurationFile( sampleConfig );
+            sbConfig.TestPackages(end+1,:) = {'anothersuite', 'otherPackage'};
+            this.verifyEqual( sbConfig.ShortName, this.ShortName );
+        end
+        
     end
     
     methods( Access = private )
