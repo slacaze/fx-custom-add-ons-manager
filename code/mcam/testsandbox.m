@@ -17,7 +17,8 @@ function testResults = testsandbox( varargin )
     %   Example
     %      testsandbox( 'unittest' );
     %
-    %   See also mksandbox, addsandbox, rmsandbox, packagesandbox
+    %   See also mksandbox, addsandbox, rmsandbox, testaddon,
+    %   packagesandbox
     
     testResults = fx.mcam.command.testsandbox( varargin{:} );
 end

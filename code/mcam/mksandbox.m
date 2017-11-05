@@ -30,7 +30,8 @@ function mksandbox( varargin )
     %      "fx".
     %      TestFolder - The name of the test folder. Deafult, "test".
     %
-    %   See also addsandbox, rmsandbox, testsandbox, packagesandbox
+    %   See also addsandbox, rmsandbox, testsandbox, testaddon,
+    %   packagesandbox
     
     fx.mcam.command.mksandbox( varargin{:} );
 end

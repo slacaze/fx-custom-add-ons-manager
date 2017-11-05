@@ -12,6 +12,8 @@ function testResults = runUnitTests( mode )
                 'fx.mcam.test.unittest',...
                 'IncludingSubpackages', true );
             runner = matlab.unittest.TestRunner.withTextOutput();
+            jUnitPlugin = matlab.unittest.plugins.XMLPlugin.producingJUnitFormat(...
+                fullfile( mcamtestroot, 'junitResults.xml' ) );
             coberturaReport = matlab.unittest.plugins.codecoverage.CoberturaFormat(...
                 fullfile( mcamtestroot, 'codeCoverage.xml' ) );
             codeCoverageFolders = fx.mcam.util.getAllFolders( mcamroot );
@@ -22,6 +24,7 @@ function testResults = runUnitTests( mode )
                 codeCoverageFolders,...
                 'IncludingSubfolders', false,...
                 'Producing', coberturaReport );
+            runner.addPlugin( jUnitPlugin );
             runner.addPlugin( codeCoveragePlugin );
             testResults = runner.run( suite );
             disp( testResults );

@@ -12,7 +12,8 @@ function rmsandbox( varargin )
     %   Example
     %      rmsandbox();
     %
-    %   See also mksandbox, addsandbox, testsandbox, packagesandbox
+    %   See also mksandbox, addsandbox, testsandbox, testaddon,
+    %   packagesandbox
     
     fx.mcam.command.rmsandbox( varargin{:} );
 end

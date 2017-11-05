@@ -260,10 +260,11 @@ classdef Sandbox < handle
             else
                 testPackage = this.Configuration.TestPackages{testIndex,2};
             end
-            testResults = runtests( testPackage, 'IncludeSubpackages', true );
+            testResults = runtests( testPackage,...
+                'IncludeSubpackages', true );
         end
         
-        function package( this )
+        function package( this, outputFile )
             this.verifyConfigFileExist();
             this.verifyPrjFileExist();
             if ~any( strcmp( this.SourceCodeFolder, strsplit( path, ';' ) ) )
@@ -277,12 +278,53 @@ classdef Sandbox < handle
                     @() addpath( this.TestFolder, '-end' ) );
             end
             this.prepareForPackaging();
-            outputFile = fullfile(...
-                this.Root,...
-                sprintf( '%s v%s.mltbx',...
-                this.Name,...
-                this.Version ) );
+            if nargin < 2
+                outputFile = fullfile(...
+                    this.Root,...
+                    sprintf( '%s v%s.mltbx',...
+                    this.Name,...
+                    this.Version ) );
+            end
+            fx.mcam.util.flushEventQueue();
             matlab.addons.toolbox.packageToolbox( this.PrjFile, outputFile );
+            fx.mcam.util.flushEventQueue();
+        end
+        
+        function testResults = testPackagedAddon( this, suiteName )
+            this.verifyConfigFileExist();
+            this.verifyPrjFileExist();
+            if nargin < 2
+                suiteName = '';
+            end
+            tempFile = sprintf( '%s.mltbx', tempname );
+            this.package( tempFile );
+            deleteFile = onCleanup( @() delete( tempFile ) );
+            fx.mcam.util.flushEventQueue();
+            tempToolbox = matlab.addons.toolbox.installToolbox( tempFile, true );
+            fx.mcam.util.flushEventQueue();
+            if any( strcmp( this.SourceCodeFolder, strsplit( path, ';' ) ) )
+                rmpath( this.SourceCodeFolder );
+                reAddSourceCode = true;
+            else
+                reAddSourceCode = false;
+            end
+            if ~any( strcmp( this.TestFolder, strsplit( path, ';' ) ) )
+                addpath( this.TestFolder, '-end' );
+                removeTest = true;
+            else
+                removeTest = false;
+            end
+            fx.mcam.util.flushEventQueue();
+            testResults = this.test( suiteName );
+            if reAddSourceCode
+                addpath( this.SourceCodeFolder, '-end' );
+            end
+            if removeTest
+                rmpath( this.TestFolder );
+            end
+            fx.mcam.util.flushEventQueue();
+            matlab.addons.toolbox.uninstallToolbox( tempToolbox );
+            fx.mcam.util.flushEventQueue();
         end
         
     end
@@ -326,7 +368,10 @@ classdef Sandbox < handle
                 version( '-release' ),...
                 datetime( 'now', 'Format', 'dd-MMM-yyyy' ) );
             if exist( this.ContentsFile, 'file' ) ~= 2
+                oldPath = pwd;
+                cd( this.SourceCodeFolder );
                 makecontentsfile( this.SourceCodeFolder );
+                cd( oldPath );
                 contents = splitlines( string( fileread( this.ContentsFile ) ) );
                 contents = [...
                     contents(1);...
@@ -334,7 +379,10 @@ classdef Sandbox < handle
                     contents(2:end);...
                     ];
             else
+                oldPath = pwd;
+                cd( this.SourceCodeFolder );
                 fixcontents( this.ContentsFile, 'all' );
+                cd( oldPath );
                 contents = splitlines( string( fileread( this.ContentsFile ) ) );
                 contents(2) = versionLine;
             end

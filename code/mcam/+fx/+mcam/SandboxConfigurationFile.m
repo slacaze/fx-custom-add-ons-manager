@@ -15,7 +15,7 @@ classdef SandboxConfigurationFile < fx.mcam.internal.File
         ParentPackage_(1,:) char {fx.mcam.util.mustBeValidPackageName} = char.empty
         ShortName_(1,:) char {fx.mcam.util.mustBeValidFileName} = char.empty
         TestFolder_(1,:) char {fx.mcam.util.mustBeValidFileName} = char.empty
-        TestPackages_(:,2) cell {fx.mcam.util.mustBeValidPackageName} = cell.empty
+        TestPackages_(:,2) cell {fx.mcam.util.mustBeValidPackageName} = cell.empty( 0, 2 )
     end
     
     methods
@@ -66,6 +66,7 @@ classdef SandboxConfigurationFile < fx.mcam.internal.File
         
         function this = SandboxConfigurationFile( path )
             this@fx.mcam.internal.File( path );
+            this = this.deserialize();
         end
         
     end
@@ -103,22 +104,20 @@ classdef SandboxConfigurationFile < fx.mcam.internal.File
             validateattributes( config,...
                 {'struct'}, {'scalar'} );
             % AddOn info
+            this.ParentPackage_ = char.empty;
             if isfield( config, 'parent_package' )
                 this.ParentPackage_ = config.parent_package;
-            else
-                this.ParentPackage_ = char.empty;
             end
+            this.ShortName_ = char.empty;
             if isfield( config, 'short_name' )
                 this.ShortName_ = config.short_name;
-            else
-                this.ShortName_ = char.empty;
             end
             % Test config
+            this.TestPackages_ = cell.empty( 0, 2 );
+            this.TestFolder_ = char.empty;
             if isfield( config, 'test' )
                 if isfield( config.test, 'root' )
                     this.TestFolder_ = config.test.root;
-                else
-                    this.TestFolder_ = char.empty;
                 end
                 if isfield( config.test, 'suites' )
                     suiteNames = fieldnames( config.test.suites );
@@ -128,12 +127,7 @@ classdef SandboxConfigurationFile < fx.mcam.internal.File
                             config.test.suites.(suiteNames{suiteIndex}),...
                             };
                     end
-                else
-                    this.TestPackages_ = cell.empty;
                 end
-            else
-                this.TestFolder_ = char.empty;
-                this.TestPackages_ = cell.empty;
             end
         end
         

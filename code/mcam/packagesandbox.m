@@ -12,7 +12,7 @@ function packagesandbox( varargin )
     %      packagesandbox();
     %      ver filesystem
     %
-    %   See also mksandbox, addsandbox, rmsandbox, testsandbox
+    %   See also mksandbox, addsandbox, rmsandbox, testsandbox, testaddon
     
     fx.mcam.command.packagesandbox( varargin{:} );
 end
