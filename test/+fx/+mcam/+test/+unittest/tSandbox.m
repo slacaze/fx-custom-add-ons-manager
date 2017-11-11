@@ -67,6 +67,10 @@ classdef tSandbox < fx.mcam.test.WithCleanWorkingDirectory
             this.verifyEqual( exist( 'mcam.json', 'file' ), 2 );
             this.verifyEqual( exist( fullfile( 'code', 'myaddon', 'myaddonroot.m' ), 'file' ), 2 );
             this.verifyEqual( exist( fullfile( 'test', 'myaddontestroot.m' ), 'file' ), 2 );
+            rootContent = fileread( fullfile( 'code', 'myaddon', 'myaddonroot.m' ) );
+            this.verifyEqual( rootContent, sprintf( 'function thisPath = myaddonroot()\r\n    thisPath = fileparts( mfilename( ''fullpath'' ) );\r\nend' ) );
+            rootContent = fileread( fullfile( 'test', 'myaddontestroot.m' ) );
+            this.verifyEqual( rootContent, sprintf( 'function thisPath = myaddontestroot()\r\n    thisPath = fileparts( mfilename( ''fullpath'' ) );\r\nend' ) );
         end
         
         function testAddAndRemoveSandbox( this )
