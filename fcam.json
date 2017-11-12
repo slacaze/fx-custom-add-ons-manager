@@ -1,0 +1,11 @@
+{
+    "test": {
+        "suites": {
+            "all": "fx.fcam.test",
+            "unittest": "fx.fcam.test.unittest"
+        },
+        "root": "test"
+    },
+    "parent_package": "fx",
+    "short_name": "fcam"
+}

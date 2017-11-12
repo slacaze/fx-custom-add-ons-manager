@@ -1,4 +1,4 @@
-# MATLAB Custom Add-Ons Manager Toolbox
+# Fx Custom Add-Ons Manager Toolbox
 This repo provides a suite of basic functions to help create, develop, and manage MATLAB Add-Ons (i.e., toolboxes).
 
 ## Acknowledgement
@@ -13,10 +13,10 @@ As well as this FileExchange submission:
 [Toolbox Tools](https://uk.mathworks.com/matlabcentral/fileexchange/60070-toolbox-tools)
 
 ## Basic Concepts
-This code relies on the notion of "sandbox" and of some conventions:
+This code relies on the notion of "sandbox" and some conventions:
 
 1. The sandbox is primarily defined by the PRJ file.
-2. The sandbox configuration is supplemented by the "mcam.json" file.
+2. The sandbox configuration is supplemented by the "fcam.json" file.
 3. The sandbox will package the "code" folder.
 4. A single folder will be added to the MATLAB path, "code/`shortname`".
 
