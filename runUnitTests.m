@@ -4,20 +4,20 @@ function testResults = runUnitTests( mode )
     end
     switch mode
         case 'fast'
-            testResults = runtests( 'fx.mcam.test.unittest',...
+            testResults = runtests( 'fx.fcam.test.unittest',...
                 'IncludeSubpackages', true );
             disp( testResults );
         case 'codeCoverage'
             suite = matlab.unittest.TestSuite.fromPackage(...
-                'fx.mcam.test.unittest',...
+                'fx.fcam.test.unittest',...
                 'IncludingSubpackages', true );
             runner = matlab.unittest.TestRunner.withTextOutput();
             jUnitPlugin = matlab.unittest.plugins.XMLPlugin.producingJUnitFormat(...
-                fullfile( mcamtestroot, 'junitResults.xml' ) );
+                fullfile( fcamtestroot, 'junitResults.xml' ) );
             coberturaReport = matlab.unittest.plugins.codecoverage.CoberturaFormat(...
-                fullfile( mcamtestroot, 'codeCoverage.xml' ) );
-            codeCoverageFolders = fx.mcam.util.getAllFolders( mcamroot );
-            exclusion = fullfile( mcamroot, 'templates' );
+                fullfile( fcamtestroot, 'codeCoverage.xml' ) );
+            codeCoverageFolders = fx.fcam.util.getAllFolders( fcamroot );
+            exclusion = fullfile( fcamroot, 'templates' );
             foldersToExclude = ismember( codeCoverageFolders, exclusion );
             codeCoverageFolders(foldersToExclude) = [];
             codeCoveragePlugin = matlab.unittest.plugins.CodeCoveragePlugin.forFolder(...
