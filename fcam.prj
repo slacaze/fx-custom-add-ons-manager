@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration file="C:\Users\Sylvain\MATLAB Drive\MCAM\fcam.prj" location="C:\Users\Sylvain\MATLAB Drive\MCAM" name="fcam" target="target.toolbox" target-name="Package Toolbox">
+  <configuration file="C:\Users\slacaze\MATLAB Drive\FCAM\fcam.prj" location="C:\Users\slacaze\MATLAB Drive\FCAM" name="fcam" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>Fx Custom Add-Ons Manager</param.appname>
     <param.authnamewatermark>Sylvain Lacaze</param.authnamewatermark>
     <param.email />
@@ -9,7 +9,7 @@
 
 https://github.com/slacaze/fx-custom-add-ons-manager</param.description>
     <param.screenshot>${PROJECT_ROOT}\logo.png</param.screenshot>
-    <param.version>1.0.2</param.version>
+    <param.version>1.0.3</param.version>
     <param.output>${PROJECT_ROOT}\Fx Custom Add-Ons Manager.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -54,7 +54,7 @@ https://github.com/slacaze/fx-custom-add-ons-manager</param.description>
     <fileset.depfun.excluded />
     <fileset.package />
     <build-deliverables>
-      <file location="C:\Users\Sylvain\MATLAB Drive\MCAM" name="Fx Custom Add-Ons Manager.mltbx" optional="false">C:\Users\Sylvain\MATLAB Drive\MCAM\Fx Custom Add-Ons Manager.mltbx</file>
+      <file location="C:\Users\slacaze\MATLAB Drive\FCAM" name="Fx Custom Add-Ons Manager.mltbx" optional="false">C:\Users\slacaze\MATLAB Drive\FCAM\Fx Custom Add-Ons Manager.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>

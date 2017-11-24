@@ -45,7 +45,6 @@ classdef tSandbox < fx.fcam.test.WithCleanWorkingDirectory
         
         function createSandboxWithStub( this )
             this.Sandbox = fx.fcam.Sandbox( pwd );
-            this.Sandbox.createStub();
         end
         
     end
@@ -53,6 +52,7 @@ classdef tSandbox < fx.fcam.test.WithCleanWorkingDirectory
     methods( Test )
         
         function testSandboxCreation( this )
+            this.Sandbox.createStub();
             this.verifyEqual( exist( sprintf( 'fcam.json' ), 'file' ), 2 );
             this.verifyEqual( exist( sprintf( 'myaddon.prj' ), 'file' ), 2 );
             this.verifyEqual( exist( 'code', 'dir' ), 7 );
@@ -73,7 +73,23 @@ classdef tSandbox < fx.fcam.test.WithCleanWorkingDirectory
             this.verifyEqual( rootContent, sprintf( 'function thisPath = myaddontestroot()\r\n    thisPath = fileparts( mfilename( ''fullpath'' ) );\r\nend' ) );
         end
         
+        function testCreateStubErrorsOnNonEmpty( this )
+            mkdir( 'somedir' );
+            this.verifyError( @() this.Sandbox.createStub(), 'FCAM:RootNotEmpty' );
+        end
+        
+        function testCreateStubDoesNotErrorsForGit( this )
+            mkdir( '.git' );
+            this.Sandbox.createStub();
+        end
+        
+        function testCreateStubDoesNotErrorsForSvn( this )
+            mkdir( '.svn' );
+            this.Sandbox.createStub();
+        end
+        
         function testAddAndRemoveSandbox( this )
+            this.Sandbox.createStub();
             oldPath = strsplit( path, ';' );
             this.Sandbox.addToPath();
             newPath = strsplit( path, ';' );
@@ -89,6 +105,7 @@ classdef tSandbox < fx.fcam.test.WithCleanWorkingDirectory
         end
         
         function testSandboxCanDetectConfigAndPrjFile( this )
+            this.Sandbox.createStub();
             newSandbox = fx.fcam.Sandbox( this.Root );
             this.verifyNotEmpty( newSandbox.Prj );
             this.verifyNotEmpty( newSandbox.Configuration );
@@ -96,6 +113,7 @@ classdef tSandbox < fx.fcam.test.WithCleanWorkingDirectory
         end
         
         function testPackage( this )
+            this.Sandbox.createStub();
             this.verifyEqual( exist( sprintf( '%s v1.0.0.mltbx', this.Name ), 'file' ), 0 );
             this.Sandbox.Name = this.Name;
             this.Sandbox.package();
@@ -107,6 +125,7 @@ classdef tSandbox < fx.fcam.test.WithCleanWorkingDirectory
     methods( Test, ParameterCombination = 'sequential' )
         
         function testChangingName( this, PrjAliasedProperty, InitialExpectedValue, NewValue )
+            this.Sandbox.createStub();
             this.verifyEqual( this.Sandbox.(PrjAliasedProperty), InitialExpectedValue );
             this.Sandbox.(PrjAliasedProperty) = NewValue;
             this.verifyEqual( this.Sandbox.(PrjAliasedProperty), NewValue );
