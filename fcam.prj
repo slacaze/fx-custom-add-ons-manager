@@ -9,7 +9,7 @@
 
 https://github.com/slacaze/fx-custom-add-ons-manager</param.description>
     <param.screenshot>${PROJECT_ROOT}\logo.png</param.screenshot>
-    <param.version>1.0.3</param.version>
+    <param.version>1.0.4</param.version>
     <param.output>${PROJECT_ROOT}\Fx Custom Add-Ons Manager.mltbx</param.output>
     <param.products.name />
     <param.products.id />
