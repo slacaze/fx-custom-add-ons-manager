@@ -234,6 +234,20 @@ classdef Sandbox < handle
             addpath( this.SourceCodeFolder, '-end' )
         end
         
+        function enableAddOn( this )
+            addOns = matlab.addons.installedAddons();
+            if any( strcmp( this.Guid, addOns.Identifier ) )
+                matlab.addons.enableAddon( this.Guid );
+            end
+        end
+        
+        function disableAddOn( this )
+            addOns = matlab.addons.installedAddons();
+            if any( strcmp( this.Guid, addOns.Identifier ) )
+                matlab.addons.disableAddon( this.Guid );
+            end
+        end
+        
         function removeFromPath( this )
             this.verifyConfigFileExist();
             rmpath( this.TestFolder )
