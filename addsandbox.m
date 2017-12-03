@@ -1,15 +1,15 @@
 function addsandbox()
-    if ~isempty( ver( 'fcam' ) )
-        fx.fcam.command.addsandbox();
-        fx.fcam.command.disableaddon();
-    else
+%     if ~isempty( ver( 'fcam' ) )
+%         fx.fcam.command.addsandbox();
+%         fx.fcam.command.disableaddon();
+%     else
         thisPath = fileparts( mfilename( 'fullpath' ) );
         addpath( fullfile(...
             thisPath,...
             'code',...
-            'fcam' ), '-end' );
+            'fcam' ) );
         addpath( fullfile(...
             thisPath,...
-            'test' ), '-end' );
-    end
+            'test' ) );
+%     end
 end

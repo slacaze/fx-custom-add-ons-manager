@@ -1,8 +1,8 @@
 function rmsandbox()
-    if ~isempty( ver( 'fcam' ) )
-        fx.fcam.command.enableaddon();
-        fx.fcam.command.rmsandbox();
-    else
+%     if ~isempty( ver( 'fcam' ) )
+%         fx.fcam.command.enableaddon();
+%         fx.fcam.command.rmsandbox();
+%     else
         thisPath = fileparts( mfilename( 'fullpath' ) );
         rmpath( fullfile(...
             thisPath,...
@@ -11,5 +11,5 @@ function rmsandbox()
         rmpath( fullfile(...
             thisPath,...
             'test' ) );
-    end
+%     end
 end
