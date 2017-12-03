@@ -240,7 +240,7 @@ classdef Sandbox < handle
             rmpath( this.SourceCodeFolder )
         end
         
-        function testResults = test( this, suiteName )
+        function testResults = test( this, suiteName, varargin )
             this.verifyConfigFileExist();
             if nargin < 2
                 suiteName = '';
@@ -260,8 +260,34 @@ classdef Sandbox < handle
             else
                 testPackage = this.Configuration.TestPackages{testIndex,2};
             end
-            testResults = runtests( testPackage,...
-                'IncludeSubpackages', true );
+            parser = inputParser();
+            parser.addParameter( 'CodeCoverage', false, ...
+                @(x) validateattributes( x, {'logical'}, {'scalar'} ) );
+            parser.addParameter( 'JUnitTestResults', false, ...
+                @(x) validateattributes( x, {'logical'}, {'scalar'} ) );
+            parser.parse( varargin{:} );
+            inputs = parser.Results;
+            suite = matlab.unittest.TestSuite.fromPackage(...
+                testPackage,...
+                'IncludingSubpackages', true );
+            runner = matlab.unittest.TestRunner.withTextOutput();
+            if inputs.CodeCoverage
+                coberturaReport = matlab.unittest.plugins.codecoverage.CoberturaFormat(...
+                    fullfile( this.TestFolder, 'codeCoverage.xml' ) );
+                codeCoverageFolders = fx.fcam.util.getAllFolders( this.SourceCodeFolder );
+                codeCoverageFolders = fx.fcam.util.filterCodeCoveragePaths( codeCoverageFolders );
+                codeCoveragePlugin = matlab.unittest.plugins.CodeCoveragePlugin.forFolder(...
+                    codeCoverageFolders,...
+                    'IncludingSubfolders', false,...
+                    'Producing', coberturaReport );
+                runner.addPlugin( codeCoveragePlugin );
+            end
+            if inputs.JUnitTestResults
+                jUnitPlugin = matlab.unittest.plugins.XMLPlugin.producingJUnitFormat(...
+                    fullfile( this.TestFolder, 'junitResults.xml' ) );
+                runner.addPlugin( jUnitPlugin );
+            end
+            testResults = runner.run( suite );
         end
         
         function package( this, outputFile )
@@ -290,7 +316,7 @@ classdef Sandbox < handle
             fx.fcam.util.flushEventQueue();
         end
         
-        function testResults = testPackagedAddon( this, suiteName )
+        function testResults = testPackagedAddon( this, suiteName, varargin )
             this.verifyConfigFileExist();
             this.verifyPrjFileExist();
             if nargin < 2
@@ -321,7 +347,7 @@ classdef Sandbox < handle
                 removeTest = false;
             end
             fx.fcam.util.flushEventQueue();
-            testResults = this.test( suiteName );
+            testResults = this.test( suiteName, varargin{:} );
             if reAddSourceCode
                 delete( reAddSourceCodeFolderToPath );
             end

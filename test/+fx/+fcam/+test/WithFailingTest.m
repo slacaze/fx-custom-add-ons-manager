@@ -8,7 +8,7 @@ classdef WithFailingTest < fx.fcam.test.WithSampleSandbox
                 sandbox.Configuration.TestPackages(end+1,:) = {'failing', 'fx.submission.sample.failingTestOncePackaged'};
             end
             try %#ok<TRYNC>
-                sandbox.Configuration.TestPackages(end+1,:) = {'bad', 'fx.submission.sample.badTests.tBadTest'};
+                sandbox.Configuration.TestPackages(end+1,:) = {'bad', 'fx.submission.sample.badTests'};
             end
             copyfile(...
                 fullfile( fcamtestroot, 'Sample', 'prjfile.prj' ),...
