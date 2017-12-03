@@ -78,13 +78,13 @@ classdef tTestSandbox < fx.fcam.test.WithFailingTest
         
         function testTestFailuresDoesNotCauseFallback( this )
             addsandbox();
-            this.verifyError( @() testsandbox( this.Root, 'bad' ), 'MATLAB:class:InvalidType' );
+            this.verifyWarning( @() testsandbox( this.Root, 'bad' ), 'MATLAB:unittest:TestSuite:FileExcluded' );
             rmsandbox();
         end
         
         function testTestFailuresDoesNotCauseFallbackOnAddOn( this )
             addsandbox();
-            this.verifyError( @() testaddon( this.Root, 'bad' ), 'MATLAB:class:InvalidType' );
+            this.verifyWarning( @() testaddon( this.Root, 'bad' ), 'MATLAB:unittest:TestSuite:FileExcluded' );
             rmsandbox();
         end
         
