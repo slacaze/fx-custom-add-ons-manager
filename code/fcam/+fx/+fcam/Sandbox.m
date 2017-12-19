@@ -192,12 +192,14 @@ classdef Sandbox < handle
             fx.fcam.util.addRoot( testPath, sprintf( '%stestroot', inputs.ShortName ) );
             % Add parent package tree
             parentPackages = strsplit( inputs.ParentPackage, '.' );
-            for packageIndex = 1:numel( parentPackages )
-                thisPackage = parentPackages{packageIndex};
-                codePath = fullfile( codePath, sprintf( '+%s', thisPackage ) );
-                mkdir( codePath );
-                testPath = fullfile( testPath, sprintf( '+%s', thisPackage ) );
-                mkdir( testPath );
+            if numel( parentPackages ) > 0 && ~isempty( parentPackages{1} )
+                for packageIndex = 1:numel( parentPackages )
+                    thisPackage = parentPackages{packageIndex};
+                    codePath = fullfile( codePath, sprintf( '+%s', thisPackage ) );
+                    mkdir( codePath );
+                    testPath = fullfile( testPath, sprintf( '+%s', thisPackage ) );
+                    mkdir( testPath );
+                end
             end
             % Add main package
             codePath = fullfile( codePath, sprintf( '+%s', inputs.ShortName ) );
@@ -232,6 +234,20 @@ classdef Sandbox < handle
             this.verifyConfigFileExist();
             addpath( this.TestFolder, '-end' )
             addpath( this.SourceCodeFolder, '-end' )
+        end
+        
+        function enableAddOn( this )
+            addOns = matlab.addons.installedAddons();
+            if any( strcmp( this.Guid, addOns.Identifier ) )
+                matlab.addons.enableAddon( this.Guid );
+            end
+        end
+        
+        function disableAddOn( this )
+            addOns = matlab.addons.installedAddons();
+            if any( strcmp( this.Guid, addOns.Identifier ) )
+                matlab.addons.disableAddon( this.Guid );
+            end
         end
         
         function removeFromPath( this )

@@ -1,5 +1,5 @@
 % Fx Custom Add-Ons Manager Toolbox
-% Version 1.0.4 (R2017b) 03-Dec-2017
+% Version 1.0.5 (R2017b) 19-Dec-2017
 %
 % Types
 %   fcamroot       - Root of the Fx Custom Add-Ons Manager Toolbox
