@@ -73,6 +73,28 @@ classdef tSandbox < fx.fcam.test.WithCleanWorkingDirectory
             this.verifyEqual( rootContent, sprintf( 'function thisPath = myaddontestroot()\r\n    thisPath = fileparts( mfilename( ''fullpath'' ) );\r\nend' ) );
         end
         
+        function testSandboxCreationWorksWithEmptyParentPackage( this )
+            this.Sandbox.createStub( 'ParentPackage', '' );
+            this.verifyEqual( exist( sprintf( 'fcam.json' ), 'file' ), 2 );
+            this.verifyEqual( exist( sprintf( 'myaddon.prj' ), 'file' ), 2 );
+            this.verifyEqual( exist( 'code', 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'code', 'myaddon' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'code', 'myaddon' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'code', 'myaddon', '+myaddon' ), 'dir' ), 7 );
+            this.verifyEqual( exist( 'test', 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'test' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'test', '+myaddon' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'test', '+myaddon', '+test' ), 'dir' ), 7 );
+            this.verifyEqual( exist( fullfile( 'test', '+myaddon', '+test', '+unittest' ), 'dir' ), 7 );
+            this.verifyEqual( exist( 'fcam.json', 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'code', 'myaddon', 'myaddonroot.m' ), 'file' ), 2 );
+            this.verifyEqual( exist( fullfile( 'test', 'myaddontestroot.m' ), 'file' ), 2 );
+            rootContent = fileread( fullfile( 'code', 'myaddon', 'myaddonroot.m' ) );
+            this.verifyEqual( rootContent, sprintf( 'function thisPath = myaddonroot()\r\n    thisPath = fileparts( mfilename( ''fullpath'' ) );\r\nend' ) );
+            rootContent = fileread( fullfile( 'test', 'myaddontestroot.m' ) );
+            this.verifyEqual( rootContent, sprintf( 'function thisPath = myaddontestroot()\r\n    thisPath = fileparts( mfilename( ''fullpath'' ) );\r\nend' ) );
+        end
+        
         function testCreateStubErrorsOnNonEmpty( this )
             mkdir( 'somedir' );
             this.verifyError( @() this.Sandbox.createStub(), 'FCAM:RootNotEmpty' );
